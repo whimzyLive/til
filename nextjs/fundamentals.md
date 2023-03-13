@@ -1,4 +1,5 @@
-Next.JS 13 
+# Next.JS
+A framework for building enterprise applications with react.
 
 - Page - used for based routing (page.js)
 - Link - used to auto prefetch content and provide client side navigation with serverside routing
