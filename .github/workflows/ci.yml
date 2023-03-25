@@ -33,13 +33,13 @@ jobs:
         separator: ','
     # Run on content changes
     - if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-      uses: whimzyLive/ai-writer@v0
+      uses: whimzyLive/ai-writer@v0.1.1
       with:
         topic-files: ${{ steps.changed-files.outputs.all_changed_files }}
         output-dir: 'docs'
     # Run on manual trigger
     - if: ${{ github.event.inputs.file != '' }}
-      uses: whimzyLive/ai-writer@v0
+      uses: whimzyLive/ai-writer@v0.1.1
       with:
         topic-files: ${{ github.event.inputs.file }}
         output-dir: 'docs'
