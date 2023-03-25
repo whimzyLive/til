@@ -1,0 +1,49 @@
+name: 'Continuous Integration'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      file: 
+        description: "Input file containing blog content or overview"
+        default: ""
+env:
+  OPENAI_API_TYPE: ${{ vars.OPENAI_API_TYPE }}
+  OPENAI_API_BASE: ${{ vars.OPENAI_API_BASE }}
+  OPENAI_ENGINE: ${{ vars.OPENAI_ENGINE }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - id: changed-files
+      uses: tj-actions/changed-files@v35
+      with:
+        files: | 
+          *.md
+          !README.md
+          !docs/**/*.md
+        separator: ','
+    - name: List all changed files
+      run: |
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo "$file was changed"
+        done
+    # Run on content changes
+    - if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+      uses: whimzyLive/ai-writer@v0.1.0
+      with:
+        topic-files: ${{ steps.changed-files.outputs.all_changed_files }}
+        output-dir: 'docs'
+    # Run on manual trigger
+    - if: ${{ github.event.inputs.file != '' }}
+      uses: whimzyLive/ai-writer@v0.1.0
+      with:
+        topic-files: ${{ github.event.inputs.file }}
+        output-dir: 'docs'
+    - uses: stefanzweifel/git-auto-commit-action@v4
